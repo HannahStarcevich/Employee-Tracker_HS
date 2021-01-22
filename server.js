@@ -125,7 +125,6 @@ function viewAllRoles() {
 
 async function addEmployee() {
     var allEmployees = await connection.queryPromise("SELECT * FROM employees")
-    console.log(allEmployees)
 
     connection.query("SELECT * FROM role", function (err, res) {
         if (err) throw err;
@@ -168,18 +167,82 @@ async function addEmployee() {
                     role_id: designation.role,
                     manager_id: designation.manager
                 })
+                start();
+            })
+    })
+}
+
+async function updateEmployeeRole() {
+    var allEmployees = await connection.queryPromise("SELECT * FROM employees")
+
+    connection.query("SELECT * FROM role", function (err, res) {
+        if (err) throw err;
+
+        inquirer
+            .prompt([
+
+                {
+                    name: "selectEmployee",
+                    type: "list",
+                    message: "Who's role do you want to update?",
+                    choices: allEmployees.map((employee) => ({
+                        name: `${employee.first_name} ${employee.last_name}`,
+                        value: employee.id
+                    }))
+                }, {
+                    name: "role",
+                    type: "list",
+                    message: "What is the role of this employee?",
+                    choices: res.map((role) => ({
+                        name: role.title,
+                        value: role.id
+                    }))
+                },
+            ]).then((designation) => {
+                connection.query("UPDATE employees SET role_id = ? WHERE id = ?", {
+                    role_id: designation.role,
+                    id: designation.selectEmployee
+                })
+                start();
+            })
+    })
+}
+
+function updateEmployeeManager() {
+
+    connection.query("SELECT * FROM employees", function (err, res) {
+        if (err) throw err;
+
+        inquirer
+            .prompt([
+
+                {
+                    name: "selectEmployee",
+                    type: "list",
+                    message: "Who's manager do you want to update?",
+                    choices: res.map((employee) => ({
+                        name: `${employee.first_name} ${employee.last_name}`,
+                        value: employee.id
+                    }))
+                }, {
+                    name: "manager",
+                    type: "list",
+                    message: "Who is the manager of this employee?",
+                    choices: res.map((manager) => ({
+                        name: manager.title,
+                        value: manager.id
+                    }))
+                },
+            ]).then((designation) => {
+                connection.query("UPDATE employees SET role_id = ? WHERE id = ?", {
+                    role_id: designation.role,
+                    id: designation.selectEmployee
+                })
+                start();
             })
     })
 }
 
 
+
 // function removeEmployee() {}
-
-// function updateEmployeeRole() {}
-
-// function updateEmployeeManager() {}
-
-
-
-
-// value is the id 
