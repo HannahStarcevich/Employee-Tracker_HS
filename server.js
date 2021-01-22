@@ -25,8 +25,8 @@ function start() {
             message: "What would you like to do?",
             choices: [
                 "View All Employees",
-                "View All Employees by Department",
-                "View All Employees by Manager",
+                "View All Departments",
+                "View All Roles",
                 "Add Employee",
                 "Remove Employee",
                 "Update Employee Role",
@@ -39,12 +39,12 @@ function start() {
                     viewEmployees();
                     break;
 
-                case "View All Employees by Department":
-                    viewEmployeesDept();
+                case "View All Departments":
+                    viewAllDept();
                     break;
 
-                case "View All Employees by Manager":
-                    viewEmployeesManager();
+                case "View All Roles":
+                    viewAllRoles();
                     break;
 
                 case "Add Employee":
@@ -63,9 +63,9 @@ function start() {
                     updateEmployeeManager();
                     break;
 
-                    // case "exit":
-                    //     connection.end();
-                    //     break;
+                case "End":
+                    connection.end();
+                    break;
             }
         })
 }
@@ -85,40 +85,80 @@ function viewEmployees() {
     })
 }
 
-function viewEmployeesDept() {
-    inquirer.prompt({
-        name: "employeeDept",
-        type: "list",
-        message: "Select a department",
-        choices: [
-            "HR",
-            "Sales",
-            "IT",
-            "Operations",
-        ]
-    }).then(function (answer) {
-        console.log("fetching employee department data...")
-        var query = "SELECT employees.id, first_name, last_name, department.name AS department FROM employees JOIN role ON employees.role_id = role.id JOIN department ON role.department_id = department.id WHERE ?"
+function viewAllDept() {
 
-        connection.query(query, {
-            employeeDept: answer.employeeDept
-        }, function (err, res) {
-            if (err) {
-                throw err
-            } else {
-                for (var i = 0; i < res.length; i++) {
-                    console.table(res)
-                }
-                start();
-            }
-        });
+    console.log("fetching department data...")
+
+    connection.query("SELECT * FROM department", {
+
+    }, function (err, res) {
+        if (err) {
+            throw err
+        } else {
+            console.table(res)
+        }
+        start();
     })
-
 }
 
-// function viewEmployeesManager() {}
 
-// function addEmployee() {}
+function viewAllRoles() {
+
+    console.log("fetching role data...")
+
+    connection.query("SELECT * FROM role", {
+
+    }, function (err, res) {
+        if (err) {
+            throw err
+        } else {
+            console.table(res)
+        }
+        start();
+    })
+}
+
+function addEmployee() {
+
+    connection.query("SELECT * FROM role", function (err, results) {
+        if (err) throw err;
+
+        inquirer
+            .prompt([{
+                    name: "firstName",
+                    type: "input",
+                    message: "What is the employee's first name?"
+                },
+                {
+                    name: "lastName",
+                    type: "input",
+                    message: "What is the employee's last name?"
+                },
+                {
+                    name: "role",
+                    type: "rawlist",
+                    choices: function () {
+                        var choiceArray = [];
+                        for (var i = 0; i < results.length; i++) {
+                            choiceArray.push(results[i].title);
+                        }
+                        return choiceArray;
+                    }
+                }
+            ]).then(function (answer) {
+                var chosenItem;
+                for (var i = 0; i < results.length; i++) {
+                    if (results[i].title === answer.choice) {
+                        chosenItem = results[i];
+                    }
+                }
+
+            })
+    })
+}
+
+
+
 
 // function removeEmployee() {}
 
