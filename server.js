@@ -199,10 +199,9 @@ async function updateEmployeeRole() {
                     }))
                 },
             ]).then((designation) => {
-                connection.query("UPDATE employees SET role_id = ? WHERE id = ?", {
-                    role_id: designation.role,
-                    id: designation.selectEmployee
-                })
+                connection.query("UPDATE employees SET role_id = ? WHERE id = ?", [
+                    designation.role, designation.selectEmployee
+                ])
                 start();
             })
     })
@@ -229,15 +228,14 @@ function updateEmployeeManager() {
                     type: "list",
                     message: "Who is the manager of this employee?",
                     choices: res.map((manager) => ({
-                        name: manager.title,
+                        name: `${manager.first_name} ${manager.last_name}`,
                         value: manager.id
                     }))
                 },
             ]).then((designation) => {
-                connection.query("UPDATE employees SET role_id = ? WHERE id = ?", {
-                    role_id: designation.role,
-                    id: designation.selectEmployee
-                })
+                connection.query("UPDATE employees SET role_id = ? WHERE id = ?", [
+                    designation.role, designation.selectEmployee
+                ])
                 start();
             })
     })
