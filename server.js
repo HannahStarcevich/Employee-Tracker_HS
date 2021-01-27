@@ -227,7 +227,7 @@ function updateEmployeeManager() {
                     name: "manager",
                     type: "list",
                     message: "Who is the manager of this employee?",
-                    choices: res.map((manager) => ({
+                    choices: res.filter((manager) => ({
                         name: `${manager.first_name} ${manager.last_name}`,
                         value: manager.id
                     }))
