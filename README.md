@@ -16,6 +16,8 @@ Must install JSON dependencies, MySQL and Inquirer
 
 ## Usage
 Use this to input employee data into a MySQL database, obtain specific data listings and add and remove employees. 
+![Employee Tracker Console Image](employee-tracker.png)
+   
         
 ## Contributing
 HannahStarcevich
